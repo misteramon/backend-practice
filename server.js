@@ -2,8 +2,11 @@ const express = require('express')
 const app = express();
 const bodyParser= require('body-parser')
 app.use(bodyParser.json()); 
+app.use(bodyParser.urlencoded())
 const fetch = require('cross-fetch')
 
+const username = ''
+const password = ''
 
 
 /**
@@ -12,11 +15,15 @@ const fetch = require('cross-fetch')
  */
 app.get('/supplies', async (req, res) => {
 
-    const {username, password, nif} = req.query
+
+    /**
+     * GET AUTH TOKEN 
+     */
+    const {nif, startDate, endDate} = req.query
 
     const passwordQueryURL = encodeURIComponent(password)
     const fetchURL = `https://datadis.es/nikola-auth/tokens/login?username=${username}&password=${passwordQueryURL}`
-    const response = await fetchFromDatadis(fetchURL, "POST")
+    const response = await fetch(fetchURL, "POST")
     if(!response.ok){
         return res.status(400).send({error: response.error})
     }
@@ -25,6 +32,10 @@ app.get('/supplies', async (req, res) => {
 
     const fetchSupplyURL = `https://datadis.es/api-private/api/get-supplies?authorizedNif=${nif}`
 
+
+    /**
+     * GET USER SUPPLIES
+     */
     const supplyResponse = await fetch(fetchSupplyURL, {
         headers: {
             "Authorization": `Bearer ${token}`
@@ -40,9 +51,22 @@ app.get('/supplies', async (req, res) => {
 
     const supplies = await supplyResponse.json()
 
+    const {} = supplies // obtain params for next call
 
+    /**
+     * GET CONSUMPTION
+     * @param nif
+     * @param startDate
+     * @param endDate
+     * @param cups
+     * @param measurementType
+    */
 
-    //obtain consumption from DATADIS given supplies
+    
+
+    //fetch consumption from DATADIS given supplies
+
+    
 
     return res.status(200).json(supplies)
 
@@ -51,9 +75,7 @@ app.get('/supplies', async (req, res) => {
 
 });
 
-async function fetchFromDatadis(url, method){
-    return fetch(url, {method})
-}
+
 
 app.listen(8000, () => {
     console.log('Port 8000')
