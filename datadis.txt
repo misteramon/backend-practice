@@ -1,0 +1,18 @@
+1r:Crear Token a partir de username i password
+2n:Authorization via token
+3r:get-supplies w/NIF
+4t:get-contract-detail w/CUPS W/distributorCode w/authorizedNif
+5e:get-consumption-data w/CUPS distributorCode, startDate, endDate, measurementType, pointType(get-supplies) and NIF
+6e: Get request URL and push it in POSTMAN in a GET request
+7:Authorization Bearer Token in POSTMAN
+8: Send GET
+
+TO DO:
+-Create script that does the said above.
+-In VS, create a function that allows me to get power consumption via NIF and time via node.js
+-Create collection with functions datadis type, in postman
+-Return sempre sha de ficar una resposta
+-if !respons.ok return res.sendStatus(400)
+const payload=await respons.json{} error.responsError})
+-Uri encoding, & done error perque esta a la password i es fa servir per separar .
+.Ctrl+shift+7 fa que tot es torni a a comentari
