@@ -1,18 +1,19 @@
 const express = require('express')
 const app = express();
-const bodyParser= require('body-parser')
+const bodyParser= require('body-parser');
 app.use(bodyParser.json()); 
-app.use(bodyParser.urlencoded())
+app.use(bodyParser.urlencoded({extended: true}));
 const fetch = require('cross-fetch');
 const { response } = require('express');
 
 const username = 'B06930994'
 const password = 'lWil38!f66fS%26'
-const startDate = 'any'
-const endDate = 'any'
-const cups = 'any'
-const measurementType = 'any'
-const distributorCode = 'any'
+const cups = ''
+const measurementType = ''
+const distributorCode = ''
+const pointType = ''
+
+
 
 /**
  * This endpoint returns user cups from user data (NIF)
@@ -20,11 +21,10 @@ const distributorCode = 'any'
  */
 app.get('/supplies', async (req, res) => {
 
+    
 
-    /**
-     * GET AUTH TOKEN 
-     */
-    const {nif} = req.query
+     
+    const {nif, startDate, endDate} = req.query
 
     const passwordQueryURL = encodeURIComponent(password)
     const fetchTokenURL = `https://datadis.es/nikola-auth/tokens/login?username=${username}&password=${passwordQueryURL}`
@@ -36,10 +36,6 @@ app.get('/supplies', async (req, res) => {
     const token = await response.text()
 
     const fetchSupplyURL = `https://datadis.es/api-private/api/get-supplies?authorizedNif=${nif}`
-
-    /**
-     * GET USER SUPPLIES
-     */
     const supplyResponse = await fetch(fetchSupplyURL, "GET", {
         headers: {
             "Authorization": `Bearer ${token}`
@@ -51,12 +47,15 @@ app.get('/supplies', async (req, res) => {
         return res.status(400).send({error: response.error})
     }
 
-    const supplies = await supplyResponse.json()
+    const supplySupplies = await supplyResponse.json()
+    console.log(supplySupplies);
 
 
 
-    const fetchContractURL = 'https://datadis.es/api-private/api/get-contract-detail?cups=${cups}&distributorCode=2&authorizedNif=${nif}'
-    const contractResponse = await fetch(fetchContractURL, {
+
+
+    const fetchContractURL = `https://datadis.es/api-private/api/get-contract-detail?cups=${cups}&distributorCode=${distributorCode}&authorizedNif=${nif}`
+    const contractResponse = await fetch(fetchContractURL, "GET", {
         headers: {
             "Authorization": `Bearer ${token}`
         }
@@ -66,11 +65,11 @@ app.get('/supplies', async (req, res) => {
     if(!contractResponse.ok){
     return res.status(400).send({error: response.error})
     }
-    const supplies = await contractResponse.json()  
+    const contractSupplies = await contractResponse.json()  
     
 
-    const fetchConsumptionURL = "https://datadis.es/api-private/api/get-consumption-data?cups=ES0031405428005009LA0F&distributorCode=2&startDate=2022%2F01%2F01&endDate=2022%2F01%2F31&measurementType=0&pointType=5&authorizedNif=Y1366753S&"
-    const fetchConsumptionURL = await fetch(fetchConsumptionURL, {
+    const fetchConsumptionURL = `https://datadis.es/api-private/api/get-consumption-data?cups=${cups}&distributorCode=${distributorCode}&startDate=${startDate}&endDate=${endDate}&measurementType=${measurementType}&pointType=${pointType}&authorizedNif=${nif}`
+    const consumptionResponse = await fetch(fetchConsumptionURL, "GET", {
         headers: {
             "Authorization": `Bearer ${token}`
         }
@@ -79,11 +78,11 @@ app.get('/supplies', async (req, res) => {
     if(!consumptionResponse.ok){
     return res.status(400).send({error: response.error})
     }
-    const supplies = await consumptionResponse.json() 
+    const consumptionSupplies = await consumptionResponse.json() 
     
 
-    const fetchMaxURL = "https://datadis.es/api-private/api/get-max-power?cups=ES0031405428005009LA0F&distributorCode=5&startDate=2021%2F07&endDate=2021%2F08&authorizedNif=Y1366753S"
-    const fetchMaxURL = await fetch(fetchMaxURL, {
+    const fetchMaxURL = `https://datadis.es/api-private/api/get-max-power?cups=${cups}&distributorCode=${distributorCode}&startDate=${startDate}&endDate=${endDate}&authorizedNif=${nif}`
+    const maxResponse = await fetch(fetchMaxURL, "GET", {
         headers: {
             "Authorization": `Bearer ${token}`
         }
@@ -92,12 +91,11 @@ app.get('/supplies', async (req, res) => {
     if(!maxResponse.ok){
     return res.status(400).send({error: response.error})
     }
-    const supplies = await maxResponse.json()
+    const maxSupplies = await maxResponse.json()
 
     
  
-    const 
-    const {} = supplies // obtain params for next call
+   
 
     /**
      * GET CONSUMPTION
@@ -108,13 +106,12 @@ app.get('/supplies', async (req, res) => {
      * @param measurementType
     */
 
-    
-
+   
     //fetch consumption from DATADIS given supplies
 
-    
 
-    return res.status(200).json(supplies)
+
+        return res.status(200).json(supplies)
 
 
     
@@ -122,10 +119,10 @@ app.get('/supplies', async (req, res) => {
 });
 
 
-
-app.listen(8000, () => {
-    console.log('Port 8000')
+app.listen(7000, () => {
+    console.log('Port 7000')
 });
+
 
 
 
